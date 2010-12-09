@@ -11,8 +11,18 @@ class Object
     self
   end
   
+  #
+  # Change the value of a propery using a block.
+  # Useful for properties that return by value.
+  #
+  # For example:
+  # painter.alter(:pen) do |pen|
+  #   pen.width = 3
+  # end
+  #
   def alter(property)
-    value = yield(send(property))
+    value = send(property)
+    yield value
     send("#{property}=", value)
   end
 
