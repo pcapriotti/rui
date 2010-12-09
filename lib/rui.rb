@@ -15,9 +15,16 @@ when :qt
   require 'Qt4'
   KDE = Qt
   require 'toolkits/compat/qtkde'
+  RUI = Qt
 when :kde
   require 'korundum4'
   require 'toolkits/kde'
+  RUI = KDE
+  module RUI
+    def const_missing(c)
+      Qt.const_get(c)
+    end
+  end
 end
 
 module KDE
