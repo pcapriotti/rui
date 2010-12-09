@@ -222,6 +222,11 @@ class Qt::Application
       app.application_name = data[:id]
       app.organization_name = data[:id]
       app.data = data
+
+      if block_given?
+        yield app
+        app.exec
+      end
     end
   end
 end

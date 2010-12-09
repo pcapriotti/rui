@@ -29,21 +29,22 @@ class KDE::Application
   # Initialize an application.
   # 
   def self.init(data)
+    data = { :id => data } unless data.is_a?(Hash)
     about = KDE::AboutData.new(
       data[:id],
       data[:id],
-      data[:name],
-      data[:version],
-      data[:description],
+      data[:name] || data[:id]
+      data[:version] || '0.0',
+      data[:description] || KDE::LocalizedString.new(""),
       KDE::AboutData::License_GPL,
-      data[:copyright])
+      data[:copyright] || KDE::LocalizedString.new(""))
     data[:authors].each do |name, email|
       about.addAuthor(name, KDE::LocalizedString.new, email)
     end
     data[:contributors].each do |name, contribution|
       about.addCredit(name, contribution)
     end
-    about.bug_address = Qt::ByteArray.new(data[:bug_tracker])
+    about.bug_address = Qt::ByteArray.new(data[:bug_tracker] || "")
     
     KDE::CmdLineArgs.init(ARGV, about)
     KDE::CmdLineOptions.new.tap do |opts|
@@ -58,7 +59,11 @@ class KDE::Application
       KDE::CmdLineArgs.add_cmd_line_options opts
     end
 
-    KDE::Application.new
+    app = KDE::Application.new
+    if block_given?
+      yield app
+      app.exec
+    end
   end
 end
 
