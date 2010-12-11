@@ -15,7 +15,7 @@ class TestDescriptor < Test::Unit::TestCase
     parent.add_child(child)
     
     assert_equal 1, parent.children.size
-    assert_equal :child, parent.children.first.name
+    assert_equal :child, parent.children.first.tag
   end
   
   def test_merge_child_with_no_merge_points
@@ -29,7 +29,7 @@ class TestDescriptor < Test::Unit::TestCase
     parent.merge_child(extra_child)
 
     assert_equal 6, parent.children.size
-    assert_equal :extra, parent.children.last.name
+    assert_equal :extra, parent.children.last.tag
   end
 
   def test_merge_child_with_merge_point
@@ -45,7 +45,7 @@ class TestDescriptor < Test::Unit::TestCase
     parent.merge_child(extra_child)
 
     assert_equal 6, parent.children.size
-    assert_equal :extra, parent.children[3].name
+    assert_equal :extra, parent.children[3].tag
   end
 
   def test_merge_child_with_capped_merge_point
@@ -62,9 +62,9 @@ class TestDescriptor < Test::Unit::TestCase
     end
 
     assert_equal 8, parent.children.size
-    assert_equal :extra0, parent.children[3].name
-    assert_equal :extra1, parent.children[4].name
-    assert_equal :extra2, parent.children[7].name
+    assert_equal :extra0, parent.children[3].tag
+    assert_equal :extra1, parent.children[4].tag
+    assert_equal :extra2, parent.children[7].tag
   end
 
   def test_simple_to_sexp
