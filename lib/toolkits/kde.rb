@@ -33,22 +33,22 @@ class KDE::Application
     about = KDE::AboutData.new(
       data[:id],
       data[:id],
-      data[:name] || data[:id]
+      data[:name] || KDE::LocalizedString.new,
       data[:version] || '0.0',
-      data[:description] || KDE::LocalizedString.new(""),
+      data[:description] || KDE::LocalizedString.new,
       KDE::AboutData::License_GPL,
-      data[:copyright] || KDE::LocalizedString.new(""))
-    data[:authors].each do |name, email|
+      data[:copyright] || KDE::LocalizedString.new)
+    (data[:authors] || []).each do |name, email|
       about.addAuthor(name, KDE::LocalizedString.new, email)
     end
-    data[:contributors].each do |name, contribution|
+    (data[:contributors] || []).each do |name, contribution|
       about.addCredit(name, contribution)
     end
     about.bug_address = Qt::ByteArray.new(data[:bug_tracker] || "")
     
     KDE::CmdLineArgs.init(ARGV, about)
     opts = KDE::CmdLineOptions.new
-    data[:options].each do |args|
+    (data[:options] || []).each do |args|
       case args.size
       when 2
         opts.add(args[0], args[1])
