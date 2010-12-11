@@ -50,9 +50,9 @@ module Qt
       include GuiBuilder
       
       def create_element(window, parent, desc)
-        Qt::Menu.new(desc.opts[:text].to_s, window).tap do |menu|
-          parent.add_menu(menu)
-        end
+        menu = Qt::Menu.new(desc.opts[:text].to_s, window)
+        parent.add_menu(menu)
+        menu
       end
     end
     
@@ -96,10 +96,10 @@ module Qt
       include GuiBuilder
       
       def create_element(window, parent, desc)
-        Qt::ToolBar.new(desc.opts[:text].to_s, parent).tap do |tb|
-          tb.object_name = desc.opts[:name].to_s
-          parent.add_tool_bar(Qt::TopToolBarArea, tb)
-        end
+        tb = Qt::ToolBar.new(desc.opts[:text].to_s, parent)
+        tb.object_name = desc.opts[:name].to_s
+        parent.add_tool_bar(Qt::TopToolBarArea, tb)
+        tb
       end
     end
     
@@ -112,10 +112,10 @@ module Qt
         else
           Qt::VBoxLayout
         end
-        factory.new.tap do |layout|
-          layout.margin = desc.opts[:margin] if desc.opts[:margin]
-          parent.add_layout(layout)
-        end
+        layout = factory.new
+        layout.margin = desc.opts[:margin] if desc.opts[:margin]
+        parent.add_layout(layout)
+        layout
       end
     end
     
@@ -131,12 +131,12 @@ module Qt
       include GuiBuilder
       
       def create_element(window, parent, desc)
-        Qt::Label.new(desc.opts[:text].to_s, window).tap do |label|
-          setup_widget(label, window, parent, desc)
-          if desc.opts[:buddy]
-            window.buddies[label] = desc.opts[:buddy]
-          end
+        label = Qt::Label.new(desc.opts[:text].to_s, window)
+        setup_widget(label, window, parent, desc)
+        if desc.opts[:buddy]
+          window.buddies[label] = desc.opts[:buddy]
         end
+        label
       end
     end
     
@@ -144,10 +144,10 @@ module Qt
       include GuiBuilder
       
       def create_element(window, parent, desc)
-        KDE::TabWidget.new(window).tap do |widget|
-          setup_widget(widget, window, parent, desc)
-          widget.owner = window.owner
-        end
+        widget = KDE::TabWidget.new(window)
+        setup_widget(widget, window, parent, desc)
+        widget.owner = window.owner
+        widget
       end
     end
     
@@ -155,9 +155,9 @@ module Qt
       include GuiBuilder
       
       def create_element(window, parent, desc)
-        factory(desc).new(window).tap do |widget|
-          setup_widget(widget, window, parent, desc)
-        end
+        widget = factory(desc).new(window)
+        setup_widget(widget, window, parent, desc)
+        widget
       end
       
       def factory(desc)
@@ -214,10 +214,10 @@ module Qt
     class CheckBox < Widget
       def factory(desc)
         Factory.new do |parent|
-          Qt::CheckBox.new(parent).tap do |check|
-            check.text = desc.opts[:text].to_s
-            check.checked = desc.opts[:checked]
-          end
+          check = Qt::CheckBox.new(parent)
+          check.text = desc.opts[:text].to_s
+          check.checked = desc.opts[:checked]
+          check
         end
       end
     end

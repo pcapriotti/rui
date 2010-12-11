@@ -47,17 +47,17 @@ class KDE::Application
     about.bug_address = Qt::ByteArray.new(data[:bug_tracker] || "")
     
     KDE::CmdLineArgs.init(ARGV, about)
-    KDE::CmdLineOptions.new.tap do |opts|
-      data[:options].each do |args|
-        case args.size
-        when 2
-          opts.add(args[0], args[1])
-        when 3
-          opts.add(args[0], args[1], args[2])
-        end
+    opts = KDE::CmdLineOptions.new
+    data[:options].each do |args|
+      case args.size
+      when 2
+        opts.add(args[0], args[1])
+      when 3
+        opts.add(args[0], args[1], args[2])
       end
-      KDE::CmdLineArgs.add_cmd_line_options opts
     end
+    KDE::CmdLineArgs.add_cmd_line_options opts
+    opts
 
     app = KDE::Application.new
     if block_given?
@@ -122,11 +122,11 @@ module ActionHandler
   end
   
   def regular_action(name, opts, &blk)
-    KDE::Action.new(KDE::Icon.from_theme(opts[:icon]), 
-                    opts[:text], action_parent).tap do |a|
-      action_collection.add_action(name.to_s, a)  
-      a.connect(SIGNAL('triggered(bool)'), &blk)
-    end
+    a = KDE::Action.new(KDE::Icon.from_theme(opts[:icon]), 
+                    opts[:text], action_parent)
+    action_collection.add_action(name.to_s, a)  
+    a.connect(SIGNAL('triggered(bool)'), &blk)
+    a
   end
   
   def action_parent

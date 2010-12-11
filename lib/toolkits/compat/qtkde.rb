@@ -149,17 +149,17 @@ end
 
 class KDE::ComboBox
   def self.create_signal_map(obj)
-    super(obj).tap do |m|
-      m[:current_index_changed] = [['currentIndexChanged(int)', 1]]
-    end
+    m = super(obj)
+    m[:current_index_changed] = [['currentIndexChanged(int)', 1]]
+    m
   end
 end
 
 class KDE::TabWidget
   def self.create_signal_map(obj)
-    super(obj).tap do |m|
-      m[:current_changed] = [['currentChanged(int)', 1]]
-    end
+    m = super(obj)
+    m[:current_changed] = [['currentChanged(int)', 1]]
+    m
   end
 end
 
@@ -218,16 +218,16 @@ class Qt::Application
   attr_accessor :data
   
   def self.init(data)
-    new(ARGV).tap do |app|
-      app.application_name = data[:id]
-      app.organization_name = data[:id]
-      app.data = data
+    app = new(ARGV)
+    app.application_name = data[:id]
+    app.organization_name = data[:id]
+    app.data = data
 
-      if block_given?
-        yield app
-        app.exec
-      end
+    if block_given?
+      yield app
+      app.exec
     end
+    app
   end
 end
 

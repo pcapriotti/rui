@@ -69,10 +69,10 @@ class Qt::Image
   # a painter to use for drawing.
   # 
   def self.painted(size, &blk)
-    Qt::Image.new(size.x, size.y, Qt::Image::Format_ARGB32_Premultiplied).tap do |img|
-      img.fill(0)
-      Qt::Painter.new(img).paint(&blk)
-    end
+    img = Qt::Image.new(size.x, size.y, Qt::Image::Format_ARGB32_Premultiplied)
+    img.fill(0)
+    Qt::Painter.new(img).paint(&blk)
+    img
   end
 
   # 
@@ -290,9 +290,9 @@ module ListLike
     # For example: <tt>list.current_item.get</tt>
     # 
     def from_a(parent, array)
-      new(parent).tap do |list|
-        list.reset_from_a(array)
-      end
+      list = new(parent)
+      list.reset_from_a(array)
+      list
     end
   end
   
@@ -419,8 +419,10 @@ module Layoutable
   end
   
   def add_accessor(name, result)
-    owner.metaclass_eval do
-      define_method(name) { result }
+    class << self
+      instance_eval do
+        define_method(name) { result }
+      end
     end
   end
   
@@ -462,17 +464,17 @@ class KDE::ComboBox
   end
   
   def self.create_signal_map(obj)
-    super(obj).tap do |m|
-      m[:current_index_changed] = [['currentIndexChanged(int)', 1]]
-    end
+    m = super(obj)
+    m[:current_index_changed] = [['currentIndexChanged(int)', 1]]
+    m
   end
 end
 
 class KDE::TabWidget
   def self.create_signal_map(obj)
-    super(obj).tap do |m|
-      m[:current_changed] = [['currentChanged(int)', 1]]
-    end
+    m = super(obj)
+    m[:current_changed] = [['currentChanged(int)', 1]]
+    m
   end
 end
 
