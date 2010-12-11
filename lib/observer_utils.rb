@@ -8,7 +8,35 @@
 require 'observer'
 require 'utils'
 
+#
+# A mixin to make it easier to implement observers using the standard observer
+# library.
+#
+# Mixing <tt>Observer</tt> into a class generates a default update method,
+# which reacts to notification in the form of a hash, and calls appropriate
+# event handlers, obtained by prepending "on_" to each key, and passing it the
+# corresponding value.
+#
+# For example, an event containing the following data
+#
+#   { :pressed => { :x => 34, :y => 11 },
+#     :released => { :x => 10, :y => 76 } }
+#
+# would result in the following method calls:
+#
+#   on_pressed(:x => 34, :y => 11)
+#   on_released(:x => 10, :y => 76)
+#
+# As a special case, if an event takes more than 1 parameter, the corresponding
+# value is assumed to be an array, and its elements are passed as arguments to
+# the event.
+#
 module Observer
+  #
+  # A default implementation for the <tt>update</tt> function.
+  #
+  # Parses notification data and dispatches to the corresponding events.
+  #
   def update(data)
     data.each_key do |key|
       m = begin
@@ -30,11 +58,39 @@ module Observer
   end
 end
 
+#
+# Extensions to the standard Observable module of the observer library.
+#
+# This mixin allows to define event handlers dynamically, without having to
+# create an Observer class for each handler.
+#
+# For example, assuming <tt>button</tt> is an instance of some observable class:
+#
+#   count = 0
+#   button.on(:clicked) do
+#     count += 1
+#     puts "I have been clicked #{count} times"
+#   end
+#
+# Events can be fired with the <tt>fire</tt> method, and support arbitrary
+# arguments.
+#
 module Observable
+  #
+  # Alias to observe.
+  #
   def on(event, &blk)
     observe(event, &blk)
   end
   
+  #
+  # Create a dynamic observer handling a given event.
+  #
+  # @param event [Symbol] the event to handle
+  # @param &blk [Block] event handler
+  # @return an observer object, which can be later used to remove
+  #   the event handler.
+  #
   def observe(event, &blk)
     obs = SimpleObserver.new(event, &blk)
     add_observer obs
@@ -42,17 +98,37 @@ module Observable
     obs
   end
   
+  # Create a limited observer handling a given event.
+  #
+  # A limited observer behaves similarly to a normal dynamic observer, but in
+  # addition, it keeps track  of the return valur of the handler. When the
+  # handler returns true, the observer is destroyed.
+  #
+  # @param event [Symbol] the event to handle
+  # @param &blk [Block] event handler
+  # @return an observer object, which can be later used to remove
+  #   the event handler.
+  #
   def observe_limited(event, &blk)
     obs = LimitedObserver.new(self, event, &blk)
     add_observer obs
     obs
   end
 
+  #
+  # Fire an event.
+  #
+  # @param e [Symbol, Hash] event and arguments. This needs to be either
+  #   a Symbol, or a Hash with a single key corresponding to the event, and the
+  #   value being the event data to pass to the handler.
+  #
   def fire(e)
     changed
     notify_observers any_to_event(e)
   end
   
+  private
+
   def any_to_event(e)
     if e.is_a? Symbol
       { e => nil }
