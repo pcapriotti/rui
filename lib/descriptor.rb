@@ -7,6 +7,13 @@
 
 class Descriptor
   attr_reader :name, :opts, :children
+
+  def self.build(name, opts = { }, &blk)
+    root = new(name, opts)
+    builder = Builder.new(root)
+    builder.instance_eval(&blk) if block_given?
+    root
+  end
   
   def initialize(name, opts = { })
     @name = name
@@ -27,32 +34,38 @@ class Descriptor
       add_child(desc)
     end
   end
-  
-  def first_valid_merge_point
-    if @opts[:merge_points]
-      @opts[:merge_points].first
-    end
+
+  def add_merge_point(position, count = -1)
+    mp = MergePoint.new(position, count)
+    @opts[:merge_points] ||= MergePoint::List.new
+    @opts[:merge_points].add(mp)
+    mp
   end
   
   def to_sexp
     "(#{@name} #{@opts.inspect}#{@children.map{|c| ' ' + c.to_sexp}.join})"
   end
   
-  def merge!(other, prefix = "")
+  def merge!(other)
     if name == other.name and
         opts[:name] == other.opts[:name]
+      # if roots match
       other.children.each do |child2|
+        # merge each of the children of the second descriptor
         merged = false
         children.each do |child|
-          if child.merge!(child2, prefix + "    ")
+          # try to match with any of the children of the first descriptor
+          if child.merge!(child2)
             merged = true
             break
           end
         end
+        # if no match is found, just add it as a child of the root
         merge_child(child2.dup) unless merged
       end
       true
     elsif name == :group and other.opts[:group] == opts[:name]
+      # if the root is the group of the second descriptor, add it as a child
       merge_child(other)
     else
       false
@@ -68,7 +81,7 @@ class Descriptor
       end
       
       def first
-        @mps.first.dup
+        @mps.first
       end
       
       def add(mp)
@@ -123,14 +136,12 @@ class Descriptor
         args[-1].merge(:name => args.first)
       end
       child = Descriptor.new(name, opts)
-      blk[self.class.new(child)] if block_given?
+      self.class.new(child).instance_eval(&blk) if block_given?
       __desc__.add_child(child)
     end
     
     def merge_point(count = -1)
-      mp = MergePoint.new(@__desc__.children.size, count)
-      @__desc__.opts[:merge_points] ||= MergePoint::List.new
-      @__desc__.opts[:merge_points].add(mp)
+      @__desc__.add_merge_point(@__desc__.children.size, count)
     end
   end
 end
