@@ -5,9 +5,9 @@
 # published by the Free Software Foundation; either version 3 of the
 # License, or (at your option) any later version.
 
-require 'observer_utils'
-require 'descriptor'
-require 'toolkits/qtbase/gui_builder'
+require 'rui/observer_utils'
+require 'rui/descriptor'
+require 'rui/toolkits/qtbase/gui_builder'
 
 ParseException = Class.new(Exception)
 

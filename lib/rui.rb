@@ -6,19 +6,19 @@
 # License, or (at your option) any later version.
 
 require 'rubygems' rescue nil
-require 'observer_utils'
-require 'utils'
+require 'rui/observer_utils'
+require 'rui/utils'
 require 'builder'
 
 case ($toolkit || :kde)
 when :qt
   require 'Qt4'
   KDE = Qt
-  require 'toolkits/qt/qt'
+  require 'rui/toolkits/qt/qt'
   RUI = Qt
 when :kde
   require 'korundum4'
-  require 'toolkits/kde/kde'
+  require 'rui/toolkits/kde/kde'
   RUI = KDE
   module RUI
     def const_missing(c)

@@ -6,7 +6,7 @@
 # License, or (at your option) any later version.
 
 require 'observer'
-require 'utils'
+require 'rui/utils'
 
 #
 # A mixin to make it easier to implement observers using the standard observer
