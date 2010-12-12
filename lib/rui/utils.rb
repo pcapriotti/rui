@@ -5,6 +5,18 @@
 # published by the Free Software Foundation; either version 3 of the
 # License, or (at your option) any later version.
 
+class Object
+  def metaclass
+    class << self
+      self
+    end
+  end
+
+  def metaclass_eval(&blk)
+    metaclass.instance_eval(&blk)
+  end
+end
+
 class String
   #
   # Convert from camel case to underscore_separated.

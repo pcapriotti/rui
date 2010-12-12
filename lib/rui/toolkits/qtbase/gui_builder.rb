@@ -14,7 +14,7 @@ module Qt
     def build(window, parent, desc)
       element = create_element(window, parent, desc)
       desc.children.each do |child|
-        b = builder(child.name).new
+        b = builder(child.tag).new
         b.build(window, element, child)
       end
       element
@@ -22,6 +22,7 @@ module Qt
     
     def setup_widget(widget, parent, layout, desc)
       layout.add_widget(widget)
+      puts "desc.opts = #{desc.opts.inspect}"
       if desc.opts[:name]
         parent.add_accessor(desc.opts[:name], widget)
       end        
@@ -181,7 +182,7 @@ module Qt
       
       def build(window, parent, desc)
         desc.children.each do |child|
-          b = builder(child.name).new
+          b = builder(child.tag).new
           b.build(parent, Helper.new(parent, desc.opts[:text]), child)
         end
       end

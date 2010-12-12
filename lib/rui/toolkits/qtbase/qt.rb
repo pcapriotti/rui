@@ -500,10 +500,8 @@ module Layoutable
   end
   
   def add_accessor(name, result)
-    class << self
-      instance_eval do
-        define_method(name) { result }
-      end
+    owner.metaclass_eval do
+      define_method(name) { result }
     end
   end
   
