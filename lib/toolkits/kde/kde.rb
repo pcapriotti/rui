@@ -71,6 +71,10 @@ class KDE::CmdLineArgs
   def [](i)
     arg(i)
   end
+
+  def is_set(name)
+    isSet(Qt::ByteArray.new(name))
+  end
 end
 
 class KDE::ActionCollection  
@@ -126,11 +130,21 @@ module ActionHandler
                     opts[:text], action_parent)
     action_collection.add_action(name.to_s, a)  
     a.connect(SIGNAL('triggered(bool)'), &blk)
+    a.tool_tip = opts[:tooltip] if opts[:tooltip]
+    a.shortcut = opts[:shortcut] if opts[:shortcut]
     a
   end
   
   def action_parent
     self
+  end
+
+  def plug_action_list(name, actions)
+    plugActionList(name.to_s, actions)
+  end
+
+  def unplug_action_list(name)
+    unplugActionList(name.to_s)
   end
 end
 
@@ -216,6 +230,16 @@ module KDE
         DefineGroup(:name => name)
       end
     end
+  end
+
+  def self.active_color
+    scheme = KDE::ColorScheme.new(Qt::Palette::Active, KDE::ColorScheme::Window)
+    color = scheme.foreground(KDE::ColorScheme::PositiveText).color
+  end
+
+  def self.std_shortcut(name)
+    code = KDE::StandardShortcut.send(name.to_s.capitalize)
+    StandardShortcut::shortcut(code)
   end
 end
 

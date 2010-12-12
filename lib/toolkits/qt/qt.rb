@@ -19,6 +19,15 @@ module KDE
   def self.i18nc(context, str)
     str
   end
+  
+  def self.active_color
+    $qApp.palette.color(Qt::Palette::Highlight)
+  end
+  
+  def self.std_shortcut(name)
+    code = Qt::KeySequence.send(name.to_s.capitalize)
+    Qt::KeySequence.new(code)
+  end
 end
 
 Qt::XmlGuiWindow = Qt::MainWindow
@@ -34,7 +43,7 @@ class Qt::UrlRequester < Qt::LineEdit
 end
 
 class Qt::MainWindow
-  attr_reader :gui
+  attr_reader :guis
   
   def initialize(parent)
     super(parent)
@@ -42,33 +51,15 @@ class Qt::MainWindow
     setToolButtonStyle(Qt::ToolButtonFollowStyle)
     
     # create basic GUI
+    @guis = []
     @gui = Qt::gui(:qt_base) do |g|
       g.menu_bar do |mb|
-        mb.menu(:file, :text => KDE::i18n("&File")) do |m|
-          m.action :open_new
-          m.action :open
-          m.action :save
-          m.action :save_as
-          m.separator
-          m.merge_point
-          m.separator
-          m.action :quit
-        end
-        mb.menu(:edit, :text => KDE::i18n("&Edit")) do |m|
-          m.action :undo
-          m.action :redo
-        end
         mb.merge_point
         mb.menu(:settings, :text => KDE::i18n("&Settings"))
         mb.menu(:help, :text => KDE::i18n("&Help")) do |m|
           m.action :about
           m.action :about_qt
         end
-      end
-      g.tool_bar(:mainToolBar, :text => KDE::i18n("&Main toolbar")) do |tb|
-        tb.action :open_new
-        tb.action :open
-        tb.action :save
       end
     end
   end
@@ -83,6 +74,7 @@ class Qt::MainWindow
     regular_action(:about_qt, :text => KDE::i18n("About &Qt")) { $qApp.about_qt }
     
     @gui.merge!(gui)
+    @guis.each {|g| @gui.merge! g }
     Qt::GuiBuilder.build(self, @gui)
     
     # restore state
@@ -96,7 +88,7 @@ class Qt::MainWindow
       restore_state(state)
     end
   end
-  
+
   def saveGUI
     settings = Qt::Settings.new
     settings.begin_group("mainwindow")
@@ -104,6 +96,11 @@ class Qt::MainWindow
     settings.set_value("state", Qt::Variant.new(save_state))
     settings.end_group
     settings.sync
+  end
+  
+  def caption=(title)
+    self.window_title = $qApp.application_name.capitalize + 
+        " - " + title
   end
 end
 
@@ -129,29 +126,32 @@ end
 
 class Qt::XMLGUIClient < Qt::Object
   def setGUI(gui)
-    parent.gui.merge!(gui)
-  end
-end
-
-class KDE::ComboBox
-  def self.create_signal_map(obj)
-    m = super(obj)
-    m[:current_index_changed] = [['currentIndexChanged(int)', 1]]
-    m
-  end
-end
-
-class KDE::TabWidget
-  def self.create_signal_map(obj)
-    m = super(obj)
-    m[:current_changed] = [['currentChanged(int)', 1]]
-    m
+    parent.guis << gui
   end
 end
 
 module ActionHandler
   def action_collection
     @action_collection ||= { }
+  end
+
+  def action_list_entries
+    @action_list_entries ||= Hash.new {|h, x| h[x] = [] }
+  end
+
+  def plug_action_list(name, actions)
+    action_list_entries[name].each do |entry|
+      actions.each do |action|
+        puts "adding action to #{entry.parent}: #{action.text}"
+        entry.add_action(action)
+      end
+    end
+  end
+
+  def unplug_action_list(name)
+    action_list_entries[name].each do |entry|
+      entry.clear
+    end
   end
   
   def add_action(name, a)
@@ -176,6 +176,8 @@ module ActionHandler
     if (opts[:icon])
       a.icon = Qt::Icon.from_theme(opts[:icon])
     end
+    a.shortcut = opts[:shortcut] if opts[:shortcut]
+    a.tool_tip = opts[:tooltip] if opts[:tooltip]
     a
   end
   
@@ -186,11 +188,6 @@ end
 
 module Qt
   STD_ACTIONS = {
-    :open_new => [KDE::i18n("&New..."), 'document-new'],
-    :open => [KDE::i18n("&Open..."), 'document-open'],
-    :quit => [KDE::i18n("&Quit"), 'application-exit'],
-    :save => [KDE::i18n("&Save"), 'document-save'],
-    :save_as => [KDE::i18n("S&ave as..."), 'document-save-as'],
     :undo => [KDE::i18n("&Undo"), 'edit-undo'],
     :redo => [KDE::i18n("&Redo"), 'edit-redo']
   }
@@ -213,13 +210,28 @@ class Qt::Application
       yield app
       app.exec
     end
-    app
   end
 end
 
 class KDE::CmdLineArgs
   def self.parsed_args
-    ARGV
+    new(ARGV)
+  end
+  
+  def initialize(args)
+    @args = args
+  end
+  
+  def [](i)
+    @args[i]
+  end
+  
+  def count
+    @args.size
+  end
+  
+  def is_set(name)
+    false
   end
 end
 
