@@ -64,6 +64,7 @@ class KDE::Application
       yield app
       app.exec
     end
+    app
   end
 end
 

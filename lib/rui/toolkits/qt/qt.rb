@@ -210,6 +210,7 @@ class Qt::Application
       yield app
       app.exec
     end
+    app
   end
 end
 
