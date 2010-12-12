@@ -14,11 +14,11 @@ case ($toolkit || :kde)
 when :qt
   require 'Qt4'
   KDE = Qt
-  require 'toolkits/compat/qtkde'
+  require 'toolkits/qt/qt'
   RUI = Qt
 when :kde
   require 'korundum4'
-  require 'toolkits/kde'
+  require 'toolkits/kde/kde'
   RUI = KDE
   module RUI
     def const_missing(c)

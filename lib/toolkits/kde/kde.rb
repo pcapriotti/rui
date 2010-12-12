@@ -5,7 +5,7 @@
 # published by the Free Software Foundation; either version 3 of the
 # License, or (at your option) any later version.
 
-require 'toolkits/qt'
+require 'toolkits/qtbase/qt'
 require 'builder'
 begin 
   require 'kio' 

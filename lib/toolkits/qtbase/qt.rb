@@ -7,7 +7,7 @@
 
 require 'observer_utils'
 require 'descriptor'
-require 'toolkits/qt_gui_builder'
+require 'toolkits/qtbase/gui_builder'
 
 ParseException = Class.new(Exception)
 
