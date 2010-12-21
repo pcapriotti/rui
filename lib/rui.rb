@@ -29,8 +29,6 @@ end
 
 module KDE
   def self.autogui(name, opts = { }, &blk)
-    desc = Descriptor.new(:gui, opts.merge(:gui_name => name))
-    blk[Descriptor::Builder.new(desc)] if block_given?
-    desc
+    Descriptor.build(:gui, opts.merge(:gui_name => name), &blk)
   end
 end
