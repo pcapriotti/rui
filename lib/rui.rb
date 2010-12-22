@@ -35,7 +35,7 @@ module RUI
   # by settings the widget's gui property to it. For example:
   #
   #   widget.gui = RUI::autogui do
-  #     push_button(:text => "Hello world")
+  #     button(:text => "Hello world")
   #   end
   #
   # See {Descriptor} for more details on the general descriptor DSL.
