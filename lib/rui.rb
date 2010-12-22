@@ -27,7 +27,7 @@ when :kde
   end
 end
 
-module KDE
+module RUI
   #
   # Create a GUI descriptor using the descriptor DSL.
   #
