@@ -28,7 +28,22 @@ when :kde
 end
 
 module KDE
-  def self.autogui(name, opts = { }, &blk)
+  #
+  # Create a GUI descriptor using the descriptor DSL.
+  #
+  # A GUI descriptor, as returned by this function, can be applied to a Widget
+  # by settings the widget's gui property to it. For example:
+  #
+  #   widget.gui = RUI::autogui do
+  #     push_button(:text => "Hello world")
+  #   end
+  #
+  # See {Descriptor} for more details on the general descriptor DSL.
+  #
+  # See {RUI::GuiBuilder} for a list of supported descriptor tags for GUI
+  # descriptors.
+  #
+  def self.autogui(name = :gui, opts = { }, &blk)
     Descriptor.build(:gui, opts.merge(:gui_name => name), &blk)
   end
 end
