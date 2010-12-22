@@ -324,6 +324,10 @@ class Qt::Base
   def self.create_signal_map(obj)
     obj.meta_object.create_signal_map
   end
+
+  def gui=(g)
+    setGUI(g)
+  end
 end
 
 class Qt::Timer
@@ -497,6 +501,9 @@ module Layoutable
   def add_layout(layout)
     self.layout = layout
     owner.main_layout = layout
+  end
+
+  def add_widget(w)
   end
   
   def add_accessor(name, result)

@@ -5,6 +5,8 @@
 # published by the Free Software Foundation; either version 3 of the
 # License, or (at your option) any later version.
 
+require 'rui/factory'
+
 module Qt
   module GuiBuilder    
     def self.build(window, gui)
