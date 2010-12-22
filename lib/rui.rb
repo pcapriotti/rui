@@ -18,8 +18,8 @@ when :qt
   RUI = Qt
 when :kde
   require 'korundum4'
-  require 'rui/toolkits/kde/kde'
   RUI = KDE
+  require 'rui/toolkits/kde/kde'
   module RUI
     def const_missing(c)
       Qt.const_get(c)

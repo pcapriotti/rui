@@ -7,7 +7,7 @@
 
 require 'rui/factory'
 
-module Qt
+module RUI
   module GuiBuilder    
     def self.build(window, gui)
       Gui.new.build(window, nil, gui)

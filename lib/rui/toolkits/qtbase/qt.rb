@@ -525,7 +525,7 @@ class Qt::Widget
   include Layoutable
   
   def setGUI(gui)
-    Qt::GuiBuilder.build(self, gui)
+    RUI::GuiBuilder.build(self, gui)
     buddies.each do |label, buddy|
       label.buddy = owner.__send__(buddy)
     end

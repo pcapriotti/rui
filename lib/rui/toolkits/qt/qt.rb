@@ -75,7 +75,7 @@ class Qt::MainWindow
     
     @gui.merge!(gui)
     @guis.each {|g| @gui.merge! g }
-    Qt::GuiBuilder.build(self, @gui)
+    RUI::GuiBuilder.build(self, @gui)
     
     # restore state
     settings = Qt::Settings.new
