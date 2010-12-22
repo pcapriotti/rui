@@ -170,7 +170,7 @@ end
 module KDE
   def self.gui(name, &blk)
     "<!DOCTYPE kpartgui SYSTEM \"kpartgui.dtd\">\n" + 
-    GuiBuilder.new.gui({ :version => 2, :name => name }, &blk)
+    XmlGuiBuilder.new.gui({ :version => 2, :name => name }, &blk)
   end
   
   def self.with_xml_gui(xml, &blk)
@@ -186,7 +186,7 @@ module KDE
     ::File.unlink(tmp.file_name)
   end
   
-  class GuiBuilder < Builder::XmlMarkup
+  class XmlGuiBuilder < Builder::XmlMarkup
     def initialize
       super
       @action_opts = { }
