@@ -6,7 +6,7 @@
 # License, or (at your option) any later version.
 
 require 'test/unit'
-require 'descriptor'
+require 'rui/descriptor'
 
 class TestDescriptor < Test::Unit::TestCase
   def test_add_child

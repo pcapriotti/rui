@@ -6,7 +6,7 @@
 # License, or (at your option) any later version.
 
 require 'test/unit'
-require 'observer_utils'
+require 'rui/observer_utils'
 
 class TestObserverUtils < Test::Unit::TestCase
   class FakeObservable
