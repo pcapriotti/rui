@@ -24,7 +24,6 @@ module Qt
     
     def setup_widget(widget, parent, layout, desc)
       layout.add_widget(widget)
-      puts "desc.opts = #{desc.opts.inspect}"
       if desc.opts[:name]
         parent.add_accessor(desc.opts[:name], widget)
       end        
