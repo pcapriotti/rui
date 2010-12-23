@@ -8,6 +8,11 @@
 require 'rui/factory'
 
 module RUI
+  #
+  # Helper module used to interpret a GUI descriptor and build a Qt GUI.
+  #
+  # Classes in this module correspond to valid descriptor tags.
+  #
   module GuiBuilder    
     def self.build(window, gui)
       Gui.new.build(window, nil, gui)
@@ -33,6 +38,11 @@ module RUI
       GuiBuilder.const_get(name.to_s.capitalize.camelize)
     end
     
+    #
+    # Root tag for a GUI descriptor.
+    #
+    # Created automatically by {RUI.autogui}.
+    #
     class Gui
       include GuiBuilder
       def create_element(window, parent, desc)
@@ -40,6 +50,11 @@ module RUI
       end
     end
     
+    #
+    # Menu bar.
+    #
+    # This tag must be a child of a gui descriptor.
+    #
     class MenuBar
       include GuiBuilder
       
@@ -48,6 +63,11 @@ module RUI
       end
     end
     
+    #
+    # A menu.
+    #
+    # This tag must be a child of a menu_bar descriptor.
+    #
     class Menu
       include GuiBuilder
       
@@ -58,6 +78,11 @@ module RUI
       end
     end
     
+    #
+    # Menu or toolbar action.
+    #
+    # This tag must be a child of a menu or toolbar descriptor.
+    #
     class Action
       include GuiBuilder
       
@@ -70,6 +95,11 @@ module RUI
       end
     end
     
+    #
+    # Menu or toolbar separator.
+    #
+    # This tag must be a child of a menu or toolbar descriptor.
+    #
     class Separator
       include GuiBuilder
       
@@ -78,6 +108,14 @@ module RUI
       end
     end
     
+    #
+    # A descriptor group.
+    #
+    # This can be used to affect how merging of descriptor is performed
+    # (together with merge points).
+    #
+    # @see Descriptor
+    #
     class Group
       include GuiBuilder
       
@@ -86,6 +124,12 @@ module RUI
       end
     end
     
+    #
+    # An action list is a placeholder for dynamically pluggable actions.
+    #
+    # Action lists can be plugged by using {ActionHandler#plug_action_list} and
+    # removed with {ActionHandler#unplug_action_list}.
+    #
     class ActionList
       include GuiBuilder
       
@@ -94,6 +138,11 @@ module RUI
       end
     end
     
+    #
+    # A toolbar.
+    #
+    # This tag must be a child of a gui descriptor.
+    #
     class ToolBar
       include GuiBuilder
       
@@ -105,6 +154,14 @@ module RUI
       end
     end
     
+    #
+    # A widget layout.
+    #
+    # Two orientations are supported: horizontal and vertical. The orientation
+    # is controlled by the <tt>type</tt> attribute of this descriptor.
+    #
+    # A margin can also be specified using the <tt>margin</tt> attribute.
+    #
     class Layout
       include GuiBuilder
       
@@ -121,6 +178,11 @@ module RUI
       end
     end
     
+    #
+    # A stretch element.
+    #
+    # Used to separate consecutive elements of a layout.
+    #
     class Stretch
       include GuiBuilder
       
@@ -129,6 +191,15 @@ module RUI
       end
     end
     
+    #
+    # A label.
+    #
+    # The label text is specified by the <tt>text</tt> attribute.
+    #
+    # A <tt>buddy</tt> attribute can also be specified as a widget id. The widget with
+    # the given id will be set as the buddy of this label as GUI construction
+    # time.
+    #
     class Label
       include GuiBuilder
       
@@ -142,6 +213,9 @@ module RUI
       end
     end
     
+    #
+    # A TabWidget.
+    #
     class TabWidget
       include GuiBuilder
       
@@ -153,6 +227,15 @@ module RUI
       end
     end
     
+    #
+    # A generic widget.
+    #
+    # To use this tag, the <tt>factory</tt> descriptor property must be set to
+    # the Factory to use to create the widget. The {Factory} class can be
+    # useful when the widget to create needs special initialization. Note that
+    # the given factory will be invoked passing only the parent widget as a
+    # parameter, so any extra parameters must be preset by the factory itself.
+    #
     class Widget
       include GuiBuilder
       
@@ -167,6 +250,11 @@ module RUI
       end
     end
     
+    #
+    # An individual tab in a tab_widget.
+    #
+    # This tag must be a child of tab_widget descriptor.
+    #
     class Tab
       include GuiBuilder
       
@@ -189,30 +277,47 @@ module RUI
       end
     end
     
+    #
+    # A url requester widget.
+    #
     class UrlRequester < Widget
       def factory(desc)
         KDE::UrlRequester
       end
     end
 
+    #
+    # A line edit widget.
+    #
     class LineEdit < Widget
       def factory(desc)
         Qt::LineEdit
       end
     end
     
+    #
+    # A combobox.
+    #
     class ComboBox < Widget
       def factory(desc)
         KDE::ComboBox
       end
     end
     
+    #
+    # A list widget.
+    #
     class List < Widget
       def factory(desc)
         Qt::ListView
       end
     end
     
+    #
+    # A checkbox.
+    #
+    # The <tt>checked</tt> property specifies whether the checkbox is checked.
+    #
     class CheckBox < Widget
       def factory(desc)
         Factory.new do |parent|
@@ -224,6 +329,9 @@ module RUI
       end
     end
     
+    #
+    # A push button.
+    #
     class Button < Widget
       def factory(desc)
         Factory.new do |parent|
