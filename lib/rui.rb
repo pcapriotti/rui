@@ -18,11 +18,16 @@ when :qt
   RUI = Qt
 when :kde
   require 'korundum4'
-  RUI = KDE
   require 'rui/toolkits/kde/kde'
   module RUI
-    def const_missing(c)
-      Qt.const_get(c)
+    MainWindow = KDE::XmlGuiWindow
+
+    def self.const_missing(c)
+      if KDE.const_defined?(c)
+        KDE.const_get(c)
+      else
+        Qt.const_get(c)
+      end
     end
   end
 end

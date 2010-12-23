@@ -95,7 +95,7 @@ end
 
 class KDE::XmlGuiWindow
   def setGUI(gui)
-    KDE::with_xml_gui(gui) do |file|
+    RUI::with_xml_gui(gui) do |file|
       setupGUI(KDE::XmlGuiWindow::Default, file)
     end
   end
@@ -106,7 +106,7 @@ end
 
 class KDE::XMLGUIClient
   def setGUI(gui)
-    KDE::with_xml_gui(gui) do |file|
+    RUI::with_xml_gui(gui) do |file|
       setXMLFile(file)
     end
   end
@@ -167,7 +167,34 @@ class KDE::ConfigGroup
   end
 end
 
-module KDE
+class KDE::TabWidget
+  include Layoutable
+end
+
+class KDE::Process
+  def output_channel_mode=(value)
+    c = self.class.const_get("#{value.to_s.capitalize.camelize}Channel")
+    setOutputChannelMode(c)
+  end
+  
+  def self.split_args(str)
+    KDE::Shell.split_args(str)
+  end
+  
+  def run(path, args)
+    set_program(path, args)
+    start
+  end
+end
+
+def KDE.download_tempfile(url, parent)
+  result = ""
+  if KIO::NetAccess.download(url, result, parent)
+    result
+  end
+end
+
+module RUI
   def self.gui(name, &blk)
     "<!DOCTYPE kpartgui SYSTEM \"kpartgui.dtd\">\n" + 
     XmlGuiBuilder.new.gui({ :version => 2, :name => name }, &blk)
@@ -242,31 +269,8 @@ module KDE
     code = KDE::StandardShortcut.send(name.to_s.capitalize)
     StandardShortcut::shortcut(code)
   end
-end
 
-class KDE::TabWidget
-  include Layoutable
-end
-
-class KDE::Process
-  def output_channel_mode=(value)
-    c = self.class.const_get("#{value.to_s.capitalize.camelize}Channel")
-    setOutputChannelMode(c)
-  end
-  
-  def self.split_args(str)
-    KDE::Shell.split_args(str)
-  end
-  
-  def run(path, args)
-    set_program(path, args)
-    start
-  end
-end
-
-def KDE.download_tempfile(url, parent)
-  result = ""
-  if KIO::NetAccess.download(url, result, parent)
-    result
+  def self.i18n(*args)
+    KDE.i18n(*args)
   end
 end
