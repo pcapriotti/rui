@@ -30,8 +30,6 @@ module KDE
   end
 end
 
-Qt::XmlGuiWindow = Qt::MainWindow
-
 class Qt::UrlRequester < Qt::LineEdit
   def url=(val)
     self.text = val.to_string
