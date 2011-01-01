@@ -14,8 +14,8 @@ case ($toolkit || :kde)
 when :qt
   require 'Qt4'
   KDE = Qt
-  require 'rui/toolkits/qt/qt'
   RUI = Qt
+  require 'rui/toolkits/qt/qt'
 when :kde
   require 'korundum4'
   require 'rui/toolkits/kde/kde'
