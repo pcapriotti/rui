@@ -37,6 +37,7 @@ Gem::Specification.new do |s|
     "lib/rui/toolkits/qtbase/gui_builder.rb",
     "lib/rui/toolkits/qtbase/qt.rb",
     "lib/rui/utils.rb",
+    "rui.gemspec",
     "test/helper.rb",
     "test/test_descriptor.rb",
     "test/test_factory.rb",
