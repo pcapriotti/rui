@@ -140,7 +140,6 @@ module ActionHandler
   def plug_action_list(name, actions)
     action_list_entries[name].each do |entry|
       actions.each do |action|
-        puts "adding action to #{entry.parent}: #{action.text}"
         entry.add_action(action)
       end
     end
