@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{rui}
-  s.version = "0.1.0"
+  s.version = "0.1.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Paolo Capriotti"]
-  s.date = %q{2011-01-01}
+  s.date = %q{2011-01-09}
   s.description = %q{GUI abstraction library supporting Qt and KDE backends}
   s.email = %q{p.capriotti@gmail.com}
   s.extra_rdoc_files = [
@@ -17,6 +17,7 @@ Gem::Specification.new do |s|
   ]
   s.files = [
     ".document",
+    "CHANGELOG",
     "COPYING",
     "Gemfile",
     "Gemfile.lock",
