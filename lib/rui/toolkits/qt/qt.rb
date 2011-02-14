@@ -198,6 +198,7 @@ class Qt::Application
   attr_accessor :data
   
   def self.init(data)
+    data = { :id => data } unless data.is_a?(Hash)
     app = new(ARGV)
     app.application_name = data[:id]
     app.organization_name = data[:id]
