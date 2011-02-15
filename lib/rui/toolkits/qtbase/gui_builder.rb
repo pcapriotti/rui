@@ -219,6 +219,8 @@ module RUI
     #
     # The label text is specified by the <tt>text</tt> attribute.
     #
+    # A label image may be specified by the <tt>image</tt> attribute.
+    #
     # A <tt>buddy</tt> attribute can also be specified as a widget id. The widget with
     # the given id will be set as the buddy of this label as GUI construction
     # time.
@@ -228,6 +230,9 @@ module RUI
       
       def create_element(window, parent, desc)
         label = Qt::Label.new(desc.opts[:text].to_s, window)
+        if desc.opts[:image]
+          label.pixmap = desc.opts[:image].to_pix
+        end
         setup_widget(label, window, parent, desc)
         if desc.opts[:buddy]
           window.buddies[label] = desc.opts[:buddy]
