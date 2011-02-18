@@ -1,5 +1,5 @@
 # Copyright (c) 2009-2010 Paolo Capriotti <p.capriotti@gmail.com>
-# 
+#
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
 # published by the Free Software Foundation; either version 3 of the
@@ -12,16 +12,16 @@ require 'rui/toolkits/qtbase/gui_builder'
 ParseException = Class.new(Exception)
 
 class Qt::Variant
-  # 
+  #
   # Convert any marshallable ruby object into a QVariant.
-  # 
+  #
   def self.from_ruby(x)
     new(Marshal.dump(x))
   end
 
-  # 
+  #
   # Extract the ruby object contained in a QVariant.
-  # 
+  #
   def to_ruby
     str = toString
     Marshal.load(str) if str
@@ -35,19 +35,19 @@ class Qt::ByteArray
 end
 
 class Qt::Painter
-  # 
+  #
   # Ensure this painter is closed after the block is executed.
-  # 
+  #
   def paint
     yield self
   ensure
     self.end
   end
-  
-  # 
+
+  #
   # Execute a block, then restore the painter state to what it
   # was before execution.
-  # 
+  #
   def saving
     save
     yield self
@@ -57,17 +57,17 @@ class Qt::Painter
 end
 
 class Qt::Image
-  # 
+  #
   # Convert this image to a pixmap.
-  # 
+  #
   def to_pix
     Qt::Pixmap.from_image self
   end
-  
-  # 
+
+  #
   # Paint on an image using the given block. The block is passed
   # a painter to use for drawing.
-  # 
+  #
   def self.painted(size, &blk)
     img = Qt::Image.new(size.x, size.y, Qt::Image::Format_ARGB32_Premultiplied)
     img.fill(0)
@@ -75,12 +75,12 @@ class Qt::Image
     img
   end
 
-  # 
+  #
   # Render an svg object onto a new image of the specified size. If id is not
   # specified, the whole svg file is rendered.
-  # 
+  #
   def self.from_renderer(size, renderer, id = nil)
-    img = Qt::Image.painted(size) do |p| 
+    img = Qt::Image.painted(size) do |p|
       if id
         renderer.render(p, id)
       else
@@ -95,7 +95,7 @@ module PrintablePoint
   def ==(other)
     self.x == other.x and self.y == other.y
   end
-  
+
   def to_s
     "(#{self.x}, #{self.y})"
   end
@@ -109,7 +109,7 @@ end
 
 class Qt::Point
   include PrintablePoint
-  
+
   def to_f
     Qt::PointF.new(self.x, self.y)
   end
@@ -117,7 +117,7 @@ end
 
 class Qt::PointF
   include PrintablePoint
-  
+
   def to_i
     Qt::Point.new(self.x.to_i, self.y.to_i)
   end
@@ -125,11 +125,11 @@ end
 
 class Qt::Size
   include PrintablePoint
-  
+
   def x
     width
   end
-  
+
   def y
     height
   end
@@ -137,11 +137,11 @@ end
 
 class Qt::SizeF
   include PrintablePoint
-  
+
   def x
     width
   end
-  
+
   def y
     height
   end
@@ -149,7 +149,7 @@ end
 
 class Qt::Rect
   include PrintableRect
-  
+
   def to_f
     Qt::RectF.new(self.x, self.y, self.width, self.height)
   end
@@ -160,38 +160,38 @@ class Qt::RectF
 end
 
 class Qt::Pixmap
-  # 
+  #
   # Qt > 4.6 provides effects to be applied to Qt::GraphicsItem's.
   # Since kaya effects work at a lower level of abstraction (i.e. at
   # pixmap/image level), we embed effects directly in a pixmap.
-  # 
+  #
   # When a pixmap is assigned to a Qt::GraphicsItem, its effects are
   # transferred to the item.
-  # 
+  #
   def effects
     @effects ||= []
   end
-  
+
   private :effects
-  
-  # 
+
+  #
   # Add an effect to this pixmap. If later this pixmap is assigned to an
   # Item, all its effects will be transferred to it.
-  # 
+  #
   def add_effect(effect)
     effects << effect
   end
-  
+
   #
   # Render a pixmap from an svg file. See also Qt::Image#renderer.
-  # 
+  #
   def self.from_svg(size, file, id = nil)
     from_renderer(size, Qt::SvgRenderer.new(file), id)
   end
-  
-  # 
+
+  #
   # Render a pixmap using an svg renderer. See also Qt::Image#renderer.
-  # 
+  #
   def self.from_renderer(size, renderer, id = nil)
     Qt::Image.from_renderer(size, renderer, id).to_pix
   end
@@ -207,7 +207,7 @@ class Qt::MetaObject
     (0...methodCount).map do |i|
       m = method(i)
       if m.methodType == Qt::MetaMethod::Signal
-        sign = m.signature 
+        sign = m.signature
         sign =~ /^(.*)\(.*\)$/
         sig = $1.underscore.to_sym
         val = [sign, m.parameterTypes]
@@ -221,29 +221,29 @@ end
 
 class Qt::Base
   include Observable
-  
+
   class SignalDisconnecter
     def initialize(obj, sig)
       @obj = obj
       @sig = sig
     end
-    
+
     def disconnect!
       @obj.disconnect(@sig)
     end
   end
-  
+
   class ObserverDisconnecter
     def initialize(obj, observer)
       @obj = obj
       @observer = observer
     end
-    
+
     def disconnect!
       @obj.delete_observer(@observer)
     end
   end
-  
+
   class Signal
     attr_reader :symbol
 
@@ -260,7 +260,7 @@ class Qt::Base
         new(signal, types)
       end
     end
-    
+
     def to_s
       @symbol.to_s
     end
@@ -312,15 +312,15 @@ class Qt::Base
   def run_later(&blk)
     self.in(0, &blk)
   end
-  
+
   def signal_map
     self.class.signal_map(self)
   end
-  
+
   def self.signal_map(obj)
     @signal_map ||= self.create_signal_map(obj)
   end
-  
+
   def self.create_signal_map(obj)
     obj.meta_object.create_signal_map
   end
@@ -331,17 +331,17 @@ class Qt::Base
 end
 
 class Qt::Timer
-  # 
+  #
   # Execute the given block every interval milliseconds and return a timer
   # object. Note that if the timer is garbage collected, the block will not
   # be executed anymore, so the caller should keep a reference to it for as
   # long as needed.
   # To prevent further invocations of the block, use QTimer#stop.
-  # 
+  #
   def self.every(interval, &blk)
     time = Qt::Time.new
     time.restart
-    
+
     timer = new
     timer.connect(SIGNAL('timeout()')) { blk[time.elapsed] }
     timer.start(interval)
@@ -351,10 +351,10 @@ class Qt::Timer
     timer
   end
 
-  # 
+  #
   # Execute the given block after interval milliseconds. If target is
   # specified, the block is invoked in the context of target.
-  # 
+  #
   def self.in(interval, target = nil, &blk)
     single_shot(interval,
                 Qt::BlockInvocation.new(target, blk, 'invoke()'),
@@ -371,16 +371,16 @@ module ListLike
     # Note that if an array element is not a pair, its
     # value will be used both for the text and for the
     # data.
-    # 
+    #
     # For example: <tt>list.current_item.get</tt>
-    # 
+    #
     def from_a(parent, array)
       list = new(parent)
       list.reset_from_a(array)
       list
     end
   end
-  
+
   #
   # Select the item for which the given block
   # evaluates to true.
@@ -394,8 +394,8 @@ module ListLike
     end
     nil
   end
-  
-  # 
+
+  #
   # Populate the list with values from an array.
   # See also from_a.
   #
@@ -419,7 +419,7 @@ end
 class Qt::ListWidget
   FROM_A_DATA_ROLE = Qt::UserRole
   include ListLike
-  
+
   class Item < Qt::ListWidgetItem
     def initialize(text, list, data)
       super(text, list)
@@ -430,7 +430,7 @@ class Qt::ListWidget
       data(FROM_A_DATA_ROLE).to_ruby
     end
   end
-  
+
   def current_index=(i)
     self.current_row = i
   end
@@ -445,7 +445,7 @@ class Qt::FileDialog
     filename = get_open_file_name(parent, caption, dir.to_local_file, filter)
     Qt::Url.from_local_file(filename)
   end
-  
+
   def self.get_save_url(dir, filter, parent, caption)
     filename = get_save_file_name(parent, caption, dir.to_local_file, filter)
     Qt::Url.from_local_file(filename)
@@ -459,10 +459,10 @@ class Qt::Url
 end
 
 module ModelUtils
-  # 
+  #
   # Helper method to delete model rows from within a block. This method
   # ensures that the appropriate begin/end functions are called.
-  # 
+  #
   def removing_rows(parent, first, last)
     if first > last
       yield
@@ -475,11 +475,11 @@ module ModelUtils
       end
     end
   end
-  
-  # 
+
+  #
   # Helper method to insert model rows from within a block. This method
   # ensures that the appropriate begin/end functions are called.
-  # 
+  #
   def inserting_rows(parent, first, last)
     if first > last
       yield
@@ -497,7 +497,7 @@ end
 module Layoutable
   attr_writer :owner
   attr_accessor :main_layout
-  
+
   def add_layout(layout)
     self.layout = layout
     owner.main_layout = layout
@@ -505,17 +505,17 @@ module Layoutable
 
   def add_widget(w)
   end
-  
+
   def add_accessor(name, result)
     owner.metaclass_eval do
       define_method(name) { result }
     end
   end
-  
+
   def buddies
     @buddies ||= { }
   end
-  
+
   def owner
     @owner || self
   end
@@ -523,7 +523,7 @@ end
 
 class Qt::Widget
   include Layoutable
-  
+
   def setGUI(gui)
     RUI::GuiBuilder.build(self, gui)
     buddies.each do |label, buddy|
@@ -534,9 +534,9 @@ end
 
 class KDE::ComboBox
   include ListLike
-  
+
   Item = Struct.new(:get)
-  
+
   def create_item(text, data)
     add_item(text, Qt::Variant.from_ruby(data))
   end
@@ -544,7 +544,7 @@ class KDE::ComboBox
   def current_item
     item(current_index)
   end
-  
+
   def item(i)
     Item.new(item_data(i).to_ruby)
   end
