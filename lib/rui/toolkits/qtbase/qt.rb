@@ -89,6 +89,10 @@ class Qt::Image
     end
     img
   end
+
+  def to_image
+    self
+  end
 end
 
 module PrintablePoint
